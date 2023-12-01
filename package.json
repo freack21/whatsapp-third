@@ -1,0 +1,21 @@
+{
+    "name": "whatsapp-third",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@hapi/boom": "^10.0.1",
+        "@whiskeysockets/baileys": "^6.5.0",
+        "axios": "^1.6.2",
+        "fluent-ffmpeg": "^2.1.2",
+        "meme-maker": "^2.1.2",
+        "qrcode-terminal": "^0.12.0"
+    }
+}
