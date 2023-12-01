@@ -261,6 +261,29 @@ async function connectToWhatsApp() {
                         );
                     }
                     break;
+                case "tiktokmp3":
+                case "tiktokaudio":
+                case "ttmp3":
+                case "ttaudio":
+                case "audiott":
+                    if (bodyArgs) {
+                        let resultTT = await tt(bodyArgs, true);
+
+                        if (resultTT.url) {
+                            await sock.sendMessage(from, {
+                                audio: {
+                                    url: resultTT.url,
+                                },
+                            });
+                        } else {
+                            reply(`Gagal download audio TikTok-mu. Maaf yaa`);
+                        }
+                    } else {
+                        reply(
+                            `Kirim link dengan caption ${prefix}tt <link> atau tag link yang sudah dikirim`
+                        );
+                    }
+                    break;
                 case "instagram":
                 case "insta":
                 case "ig":
@@ -308,16 +331,18 @@ async function connectToWhatsApp() {
     });
 }
 
-const tt = async (url) => {
+const tt = async (url, isMp3) => {
     return new Promise((resolve, reject) => {
         axios
             .get(`http://23.95.48.230:2121/tt?url=${url}`)
             .then(async (response) => {
                 let data = response.data;
                 const text = data.desc;
+                let url = data.mp4_1 || data.mp4_hd || data.mp4_2;
+                if (isMp3) url = data.mp3;
                 resolve({
                     text,
-                    url: data.mp4_1 || data.mp4_hd || data.mp4_2,
+                    url,
                 });
             })
             .catch((err) => {
