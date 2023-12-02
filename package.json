@@ -16,6 +16,7 @@
         "axios": "^1.6.2",
         "fluent-ffmpeg": "^2.1.2",
         "meme-maker": "^2.1.2",
+        "pino": "^8.16.2",
         "qrcode-terminal": "^0.12.0"
     }
 }

@@ -3,22 +3,50 @@ import {
     makeWASocket,
     useMultiFileAuthState,
     downloadMediaMessage,
+    makeInMemoryStore,
+    makeCacheableSignalKeyStore,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import * as fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
 import memeMaker from "meme-maker";
 import axios from "axios";
+import pino from "pino";
 
 ffmpeg.setFfmpegPath("ffmpeg.exe");
 const prefix = "-";
+const logger = pino({ level: "silent" });
 
-const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
+const store = makeInMemoryStore({ logger }) || undefined;
+store?.readFromFile("./baileys_store_multi.json");
+
+setInterval(() => {
+    store?.writeToFile("./baileys_store_multi.json");
+}, 10000);
+
+async function getMessage(key) {
+    if (store) {
+        const msg = await store.loadMessage(key?.remoteJid, key?.id);
+        return msg?.message || {};
+    }
+
+    // only if store is present
+    return {};
+}
 
 async function connectToWhatsApp() {
+    const { state, saveCreds } = await useMultiFileAuthState(
+        "auth_info_baileys"
+    );
     const sock = makeWASocket({
         printQRInTerminal: true,
-        auth: state,
+        auth: {
+            creds: state.creds,
+            /** caching makes the store faster to send/recv messages */
+            keys: makeCacheableSignalKeyStore(state.keys, logger),
+        },
+        logger,
+        getMessage,
     });
     sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect } = update;
