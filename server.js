@@ -93,7 +93,26 @@ async function connectToWhatsApp() {
             for (const msg of messages.messages) {
                 const from = msg?.key?.remoteJid || "";
                 const content = JSON.stringify(msg.message);
-                const type = Object.keys(msg.message || {})[0] || "";
+                let type = Object.keys(msg.message || {});
+                type =
+                    type.filter(
+                        (d) =>
+                            !d.includes("ContextInfo") &&
+                            !d.includes("KeyDistribution")
+                    )[0] || "";
+                // console.log(type);
+
+                const futureMsg = msg.message[type]?.message || null;
+                // console.log(futureMsg);
+                // : futureMsg
+                // ? futureMsg.imageMessage &&
+                //   (futureMsg.imageMessage.caption.startsWith(prefix)
+                //       ? futureMsg.imageMessage.caption
+                //       : futureMsg.videoMessage.caption.startsWith(
+                //             prefix
+                //         )
+                //       ? futureMsg.videoMessage.caption
+                //       : "")
 
                 let body =
                     type === "conversation" &&
@@ -105,6 +124,9 @@ async function connectToWhatsApp() {
                         : type == "videoMessage" &&
                           msg.message.videoMessage.caption.startsWith(prefix)
                         ? msg.message.videoMessage.caption
+                        : type == "documentMessage" &&
+                          msg.message.documentMessage.caption.startsWith(prefix)
+                        ? msg.message.documentMessage.caption
                         : type == "extendedTextMessage" &&
                           msg.message.extendedTextMessage.text.startsWith(
                               prefix
@@ -146,7 +168,9 @@ async function connectToWhatsApp() {
 
                 const botNumber = sock.user.jid;
                 const isGroup = from.endsWith("@g.us");
-                const sender = isGroup ? msg.participant : msg.key.remoteJid;
+                const sender = isGroup
+                    ? msg.participant || msg.key?.participant
+                    : msg.key.remoteJid;
                 const groupMetadata = isGroup
                     ? await sock.groupMetadata(from)
                     : "";
@@ -209,6 +233,27 @@ async function connectToWhatsApp() {
                     type == "documentMessage" ||
                     type == "stickerMessage" ||
                     type == "videoMessage";
+
+                let isQuoutedViewOnce =
+                    msg.message?.extendedTextMessage?.contextInfo
+                        ?.quotedMessage;
+                isQuoutedViewOnce = Object.keys(isQuoutedViewOnce || {});
+                isQuoutedViewOnce = isQuoutedViewOnce.map((d) =>
+                    d.toLowerCase()
+                );
+                isQuoutedViewOnce = isQuoutedViewOnce
+                    .join(",")
+                    .includes("viewonce");
+                let quotedMsg = null;
+                let qoutedMsgType = null;
+                if (isQuoutedViewOnce) {
+                    quotedMsg =
+                        msg.message?.extendedTextMessage?.contextInfo
+                            ?.quotedMessage;
+                    qoutedMsgType = Object.keys(quotedMsg || {})[0];
+                    quotedMsg = quotedMsg[qoutedMsgType].message;
+                    qoutedMsgType = Object.keys(quotedMsg || {})[0];
+                }
 
                 if (isCmd) await sendMsg(from, "⌛Loading..");
                 switch (command) {
@@ -389,6 +434,24 @@ async function connectToWhatsApp() {
                         } else {
                             reply(
                                 `Kirim link dengan caption ${prefix}tt <link> atau tag link yang sudah dikirim`
+                            );
+                        }
+                        break;
+                    case "show":
+                    case "reveal":
+                        if (isQuoutedViewOnce) {
+                            quotedMsg[qoutedMsgType].viewOnce = false;
+                            await sock.sendMessage(sender, {
+                                forward: {
+                                    key: msg.message.extendedTextMessage
+                                        .contextInfo?.stanzaId,
+                                    message: quotedMsg,
+                                },
+                                force: true,
+                            });
+                        } else {
+                            reply(
+                                `Balas pesan sekali lihat dengan caption ${prefix}reveal`
                             );
                         }
                         break;
