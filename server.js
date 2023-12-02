@@ -15,7 +15,7 @@ import axios from "axios";
 import pino from "pino";
 import NodeCache from "node-cache";
 
-ffmpeg.setFfmpegPath("ffmpeg.exe");
+//ffmpeg.setFfmpegPath("ffmpeg.exe");
 const prefix = "-";
 const logger = pino({ level: "silent" });
 
