@@ -427,13 +427,11 @@ async function connectToWhatsApp() {
                                     await sendMessageWTyping(from, content);
                                 }
                             } else {
-                                reply(
-                                    `Gagal download video TikTok-mu. Maaf yaa`
-                                );
+                                reply(`Gagal download video IG-mu. Maaf yaa`);
                             }
                         } else {
                             reply(
-                                `Kirim link dengan caption ${prefix}tt <link> atau tag link yang sudah dikirim`
+                                `Kirim link dengan caption ${prefix}ig <link> atau tag link yang sudah dikirim`
                             );
                         }
                         break;

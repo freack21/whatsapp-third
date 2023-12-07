@@ -103,7 +103,7 @@ async function connectToWhatsApp() {
                 // console.log(type);
 
                 const futureMsg = msg.message[type]?.message || null;
-                // console.log(futureMsg);
+                if (futureMsg) console.log(futureMsg);
                 // : futureMsg
                 // ? futureMsg.imageMessage &&
                 //   (futureMsg.imageMessage.caption.startsWith(prefix)
@@ -255,7 +255,7 @@ async function connectToWhatsApp() {
                     qoutedMsgType = Object.keys(quotedMsg || {})[0];
                 }
 
-                if (isCmd) await sendMsg(from, "⌛Loading..");
+                if (isCmd) await reply("⌛Loading..");
                 switch (command) {
                     case "stiker":
                     case "s":
@@ -427,13 +427,11 @@ async function connectToWhatsApp() {
                                     await sendMessageWTyping(from, content);
                                 }
                             } else {
-                                reply(
-                                    `Gagal download video TikTok-mu. Maaf yaa`
-                                );
+                                reply(`Gagal download video IG-mu. Maaf yaa`);
                             }
                         } else {
                             reply(
-                                `Kirim link dengan caption ${prefix}tt <link> atau tag link yang sudah dikirim`
+                                `Kirim link dengan caption ${prefix}ig <link> atau tag link yang sudah dikirim`
                             );
                         }
                         break;
