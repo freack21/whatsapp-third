@@ -103,7 +103,7 @@ async function connectToWhatsApp() {
                 // console.log(type);
 
                 const futureMsg = msg.message[type]?.message || null;
-                // console.log(futureMsg);
+                if (futureMsg) console.log(futureMsg);
                 // : futureMsg
                 // ? futureMsg.imageMessage &&
                 //   (futureMsg.imageMessage.caption.startsWith(prefix)
@@ -255,7 +255,7 @@ async function connectToWhatsApp() {
                     qoutedMsgType = Object.keys(quotedMsg || {})[0];
                 }
 
-                if (isCmd) await sendMsg(from, "⌛Loading..");
+                if (isCmd) await reply("⌛Loading..");
                 switch (command) {
                     case "stiker":
                     case "s":
