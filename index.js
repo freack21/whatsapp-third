@@ -494,7 +494,7 @@ async function connectToWhatsApp() {
                         break;
                     case "cekportal":
                     case "portal":
-                        let resultPortal = await ig(bodyArgs);
+                        let resultPortal = await portalScrap(bodyArgs);
 
                         if (!resultPortal.error) {
                             await reply(
