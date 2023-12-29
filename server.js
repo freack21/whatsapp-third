@@ -355,7 +355,6 @@ async function connectToWhatsApp() {
                                     video: {
                                         url: resultTT.url,
                                     },
-                                    caption: resultTT.text,
                                 });
                             } else {
                                 reply(
@@ -493,6 +492,25 @@ async function connectToWhatsApp() {
                             );
                         }
                         break;
+                    case "cekportal":
+                    case "portal":
+                        let resultPortal = await ig(bodyArgs);
+
+                        if (!resultPortal.error) {
+                            await reply(
+                                JSON.stringify(resultPortal.nilai, null, 2)
+                            );
+                            await reply(
+                                JSON.stringify(resultPortal.sum, null, 2)
+                            );
+                        } else {
+                            reply(
+                                resultPortal.msg ||
+                                    resultPortal.message ||
+                                    "Gagal scraping portal-mu. Maaf yaa"
+                            );
+                        }
+                        break;
                 }
             }
         }
@@ -551,6 +569,25 @@ const fb = async (url) => {
             .catch((err) => {
                 console.log(err);
                 resolve({ err });
+            });
+    });
+};
+
+const portalScrap = async (params) => {
+    const [sesi, url] = params ? params.split("|") : [];
+    return new Promise((resolve, reject) => {
+        axios
+            .post(`http://23.95.48.230:4062/`, {
+                data: {
+                    url,
+                    sesi,
+                },
+            })
+            .then(async (response) => {
+                resolve(response.data);
+            })
+            .catch((error) => {
+                resolve({ error });
             });
     });
 };

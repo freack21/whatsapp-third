@@ -355,7 +355,6 @@ async function connectToWhatsApp() {
                                     video: {
                                         url: resultTT.url,
                                     },
-                                    caption: resultTT.text,
                                 });
                             } else {
                                 reply(
@@ -435,6 +434,46 @@ async function connectToWhatsApp() {
                             );
                         }
                         break;
+                    case "facebook":
+                    case "fb":
+                    case "fbdl":
+                    case "dlfb":
+                        if (bodyArgs) {
+                            let resultFB = await fb(bodyArgs);
+
+                            if (resultFB.links && resultFB.links[0]) {
+                                const url = resultFB.links[0];
+                                let content = {
+                                    video: {
+                                        url,
+                                    },
+                                };
+                                if (
+                                    url.includes(".jpg") ||
+                                    url.includes(".png")
+                                ) {
+                                    content = {
+                                        image: {
+                                            url,
+                                        },
+                                    };
+                                } else if (url.includes(".webp")) {
+                                    content = {
+                                        sticker: {
+                                            url,
+                                        },
+                                    };
+                                }
+                                await sendMessageWTyping(from, content);
+                            } else {
+                                reply(`Gagal download video FB-mu. Maaf yaa`);
+                            }
+                        } else {
+                            reply(
+                                `Kirim link dengan caption ${prefix}fb <link> atau tag link yang sudah dikirim`
+                            );
+                        }
+                        break;
                     case "show":
                     case "reveal":
                         if (isQuoutedViewOnce) {
@@ -450,6 +489,25 @@ async function connectToWhatsApp() {
                         } else {
                             reply(
                                 `Balas pesan sekali lihat dengan caption ${prefix}reveal`
+                            );
+                        }
+                        break;
+                    case "cekportal":
+                    case "portal":
+                        let resultPortal = await ig(bodyArgs);
+
+                        if (!resultPortal.error) {
+                            await reply(
+                                JSON.stringify(resultPortal.nilai, null, 2)
+                            );
+                            await reply(
+                                JSON.stringify(resultPortal.sum, null, 2)
+                            );
+                        } else {
+                            reply(
+                                resultPortal.msg ||
+                                    resultPortal.message ||
+                                    "Gagal scraping portal-mu. Maaf yaa"
                             );
                         }
                         break;
@@ -493,6 +551,43 @@ const ig = async (url) => {
             .catch((err) => {
                 console.log(err);
                 resolve({ err });
+            });
+    });
+};
+
+const fb = async (url) => {
+    return new Promise((resolve, reject) => {
+        axios
+            .get(`http://23.95.48.230:2121/fb?url=${url}`)
+            .then(async (response) => {
+                let { links, text } = response.data;
+                resolve({
+                    links,
+                    text,
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                resolve({ err });
+            });
+    });
+};
+
+const portalScrap = async (params) => {
+    const [sesi, url] = params ? params.split("|") : [];
+    return new Promise((resolve, reject) => {
+        axios
+            .post(`http://23.95.48.230:4062/`, {
+                data: {
+                    url,
+                    sesi,
+                },
+            })
+            .then(async (response) => {
+                resolve(response.data);
+            })
+            .catch((error) => {
+                resolve({ error });
             });
     });
 };
