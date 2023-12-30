@@ -574,7 +574,7 @@ const fb = async (url) => {
 };
 
 const portalScrap = async (args) => {
-    const [params, sesi] = args ? args.split("|") : [];
+    const [params, sesi] = args ? args.split("|") : ["", ""];
     return new Promise((resolve, reject) => {
         axios
             .get(
