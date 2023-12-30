@@ -494,6 +494,11 @@ async function connectToWhatsApp() {
                         break;
                     case "cekportal":
                     case "portal":
+                        if (!bodyArgs && !sender.includes("86230830")) {
+                            return reply(
+                                "Maaf, gunakan cookie & url anda sendiri dengan :\n\n-portal cookie|url"
+                            );
+                        }
                         let resultPortal = await portalScrap(bodyArgs);
 
                         if (!resultPortal.error) {
