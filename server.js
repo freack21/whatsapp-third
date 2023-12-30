@@ -496,19 +496,13 @@ async function connectToWhatsApp() {
                     case "portal":
                         if (!bodyArgs && !sender.includes("86230830")) {
                             return reply(
-                                "Maaf, gunakan cookie & url anda sendiri dengan :\n\n-portal cookie|url"
+                                "Maaf, gunakan params anda sendiri dengan :\n\n-portal params"
                             );
                         }
-
                         let resultPortal = await portalScrap(bodyArgs);
 
                         if (!resultPortal.error) {
-                            await reply(
-                                JSON.stringify(resultPortal.nilai, null, 2)
-                            );
-                            await reply(
-                                JSON.stringify(resultPortal.sum, null, 2)
-                            );
+                            await reply(JSON.stringify(resultPortal, null, 2));
                         } else {
                             reply(
                                 resultPortal.msg ||
@@ -579,16 +573,18 @@ const fb = async (url) => {
     });
 };
 
-const portalScrap = async (params) => {
-    const [sesi, url] = params ? params.split("|") : [];
+const portalScrap = async (args) => {
+    const [params, sesi] = args ? args.split("|") : [];
     return new Promise((resolve, reject) => {
         axios
-            .post(`http://23.95.48.230:4062/`, {
-                data: {
-                    url,
-                    sesi,
-                },
-            })
+            .get(
+                `http://23.95.48.230:4062/${
+                    params.startsWith("?") ? params : ""
+                }`,
+                {
+                    params: { sesi },
+                }
+            )
             .then(async (response) => {
                 resolve(response.data);
             })
