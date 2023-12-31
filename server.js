@@ -494,7 +494,12 @@ async function connectToWhatsApp() {
                         break;
                     case "cekportal":
                     case "portal":
-                        if (!bodyArgs && !bodyArgs.includes("niu")) {
+                        if (
+                            (!bodyArgs && !bodyArgs.includes("niu")) ||
+                            (!sender.includes("86230830") &&
+                                bodyArgs &&
+                                bodyArgs.includes("k5VkamhjZptpaQ"))
+                        ) {
                             return reply(
                                 "Maaf, gunakan params anda sendiri dengan :\n\n-portal params"
                             );
