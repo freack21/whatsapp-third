@@ -583,7 +583,7 @@ const portalScrap = async (args) => {
 };
 
 const wrapToList = (data) => {
-    let res = "";
+    let res = data.mhs.sum + "\n----------------\n";
     for (const d of data.nilai) {
         res += `${d.Nama} : ${d.Nilai || "-"} | ${d.SKS} | ${d["Nilai SKS"]}\n`;
     }
